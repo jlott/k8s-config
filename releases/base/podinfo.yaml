@@ -1,10 +1,4 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: podinfo
-
----
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
@@ -22,7 +16,13 @@ spec:
   values:
     image:
       repository: justinlott/podinfo
-      tag: dev-v4qpo8kh
+      tag: dev-7yswaxr3
     replicaCount: 1
     hpa:
       enabled: false
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: podinfo
