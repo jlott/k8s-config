@@ -1,14 +1,20 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prd
+
+---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
-  name: podinfo-prod
-  namespace: prod
+  name: podinfo-prd
+  namespace: prd
   annotations:
     fluxcd.io/automated: "true"
     filter.fluxcd.io/chart-image: semver:~0.4
 spec:
-  releaseName: podinfo-prod
+  releaseName: podinfo-prd
   chart:
     git: git@github.com:fluxcd/helm-operator-get-started
     path: charts/podinfo
