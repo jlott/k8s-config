@@ -1,0 +1,18 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  annotations:
+    fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: semver:~0.4
+spec:
+  releaseName: podinfo
+  chart:
+    git: git@github.com:fluxcd/helm-operator-get-started
+    path: charts/podinfo
+    ref: master
+  values:
+    image:
+      repository: justinlott/podinfo
+      tag: 0.4.11
+    replicaCount: 3
