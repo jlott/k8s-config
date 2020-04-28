@@ -16,7 +16,7 @@ spec:
   values:
     image:
       repository: justinlott/podinfo
-      tag: dev-uokfnyx8
+      tag: dev-v4qpo8kh
     replicaCount: 1
     hpa:
       enabled: false
