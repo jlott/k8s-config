@@ -15,7 +15,7 @@ metadata:
 spec:
   releaseName: podinfo
   chart:
-    git: git@github.com:jlott/helm-operator-get-started
+    git: git@github.com:jlott/k8s-config
     path: charts/podinfo
     ref: master
   values:
