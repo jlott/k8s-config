@@ -1,4 +1,4 @@
 git:
   url: "git@github.com:jlott/helm-operator-get-started"
-  path: dev
+  path: "releases/dev"
 manifestGeneration: true
