@@ -1,5 +1,3 @@
 git:
   url: "git@github.com:jlott/helm-operator-get-started"
-  path: dev
 manifestGeneration: true
-

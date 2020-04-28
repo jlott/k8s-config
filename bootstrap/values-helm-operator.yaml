@@ -3,4 +3,3 @@ helm:
 git:
   ssh:
     secretName: "flux-git-deploy"
-

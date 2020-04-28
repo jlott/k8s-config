@@ -18,7 +18,7 @@ h2c:
   enabled: false
 
 image:
-  repository: justinlott/podinfo
+  repository: stefanprodan/podinfo
   tag: 3.1.5
   pullPolicy: IfNotPresent
 
@@ -70,7 +70,7 @@ ingress:
 resources:
   limits:
   requests:
-    cpu: 5m
+    cpu: 1m
     memory: 16Mi
 
 nodeSelector: {}

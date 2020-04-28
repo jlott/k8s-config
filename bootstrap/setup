@@ -39,7 +39,7 @@ helm upgrade --install flux fluxcd/flux --wait \
   --namespace fluxcd
 
 # Install the HelmRelease CRD:
-# This is just a copy of https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
+# This is a copy of https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
 echo "... creating custom resource definitions"
 kubectl apply -f "${BASEPATH}/crds.yaml"
 

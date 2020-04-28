@@ -1,4 +1,10 @@
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: podinfo
+
+---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
@@ -20,9 +26,3 @@ spec:
     replicaCount: 1
     hpa:
       enabled: false
-
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: podinfo
