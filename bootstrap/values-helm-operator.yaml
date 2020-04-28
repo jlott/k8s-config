@@ -1,0 +1,5 @@
+helm:
+  versions: "v3"
+git:
+  ssh:
+    secretName: "flux-git-deploy"

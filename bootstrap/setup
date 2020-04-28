@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -e
+#set -x
+
+# Notify the user of the kubectl context we are about to deploy to
+echo "Bootstrapping to kubectl context: $(kubectl config current-context)"
+echo "Hit RETURN to continue, or Ctrl-C to abort..."
+read LINE
+
+# get the absolute path to ourself
+echo "... getting base path"
+BASEPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+# brew install \
+#   fluxctl \
+#   helm \
+#   sops
+
+# Instructions from https://github.com/fluxcd/helm-operator/blob/master/chart/helm-operator/README.md
+if [[ $(helm repo list | awk '{print $2}' | egrep 'https://charts.fluxcd.io') ]]; then
+  echo "... fluxcd helm repo already exists. Skipping."
+else
+  echo "... adding fluxcd help repo"
+  helm repo add fluxcd https://charts.fluxcd.io
+fi
+
+# Create the flux namespace
+if [[ $(kubectl get namespaces fluxcd) ]]; then
+  echo "... fluxcd namespace already exists. Skipping."
+else
+  echo "... creating fluxcd namespace"
+  kubectl create namespace fluxcd
+fi
+
+echo "... installing flux"
+helm upgrade --install flux fluxcd/flux --wait \
+  --values "${BASEPATH}/values-flux.yaml" \
+  --namespace fluxcd
+
+# Install the HelmRelease CRD:
+# This is just a copy of https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
+echo "... creating custom resource definitions"
+kubectl apply -f "${BASEPATH}/crds.yaml"
+
+echo "... installing helm-operator"
+helm upgrade --install helm-operator fluxcd/helm-operator --wait \
+  --values "${BASEPATH}/values-helm-operator.yaml" \
+  --namespace fluxcd
+
+# get your ssh deploy key
+# fluxctl identity --k8s-fwd-ns fluxcd
