@@ -1,4 +1,4 @@
 git:
   url: "git@github.com:jlott/k8s-config"
-  path: "releases/prd"
+  path: "releases/dev"
 manifestGeneration: true
