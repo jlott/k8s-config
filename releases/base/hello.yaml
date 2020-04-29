@@ -2,26 +2,25 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: podinfo
+  name: hello
+
 ---
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
-  name: podinfo
-  namespace: podinfo
+  name: hello
+  namespace: hello
   annotations:
     fluxcd.io/automated: "true"
-    filter.fluxcd.io/chart-image: glob:dev-*
+    filter.fluxcd.io/chart-image: glob:*
 spec:
-  releaseName: podinfo
+  releaseName: hello
   chart:
     git: git@github.com:jlott/k8s-config
-    path: charts/podinfo
+    path: charts/hello
     ref: master
   values:
     image:
-      repository: justinlott/podinfo
+      repository: squareroot/hello
       tag: dev-vn8gelui
     replicaCount: 1
-    hpa:
-      enabled: false

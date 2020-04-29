@@ -2,9 +2,9 @@
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
-  name: podinfo
-  namespace: podinfo
+  name: hello
+  namespace: hello
 spec:
   values:
     image:
-      tag: dev-1hsinnex
+      tag: 1hsinnex
