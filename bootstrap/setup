@@ -12,11 +12,6 @@ read LINE
 echo "... getting base path"
 BASEPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-# brew install \
-#   fluxctl \
-#   helm \
-#   sops
-
 # Instructions from https://github.com/fluxcd/helm-operator/blob/master/chart/helm-operator/README.md
 if [[ $(helm repo list | awk '{print $2}' | egrep 'https://charts.fluxcd.io') ]]; then
   echo "... fluxcd helm repo already exists. Skipping."
