@@ -2,20 +2,11 @@
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
-<<<<<<< HEAD
   annotations:
     filter.fluxcd.io/chart-image: glob:dev-*
-=======
->>>>>>> 01e01ca... Auto-release justinlott/podinfo:dev-xi4ddl2r
   name: podinfo
   namespace: podinfo
 spec:
   values:
     image:
-<<<<<<< HEAD
       tag: dev-vn8gelui
-    
-=======
-      tag: dev-xi4ddl2r
-    replicaCount: 2
->>>>>>> 01e01ca... Auto-release justinlott/podinfo:dev-xi4ddl2r
