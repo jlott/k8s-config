@@ -1,24 +1,48 @@
 #!/bin/bash
 
 set -e
-#set -x
+
+readonly TARGET_ENVIRONMENT="$1"
+
+if [[ -z "${TARGET_ENVIRONMENT}" ]]; then
+  echo "You must provide a valid kubernetes context as the first argument"
+  exit 1
+fi
+
+# Load the correct kubectl context
+if [[ -f "$HOME/.kube/config.${TARGET_ENVIRONMENT}" ]]; then
+  export KUBECONFIG="$HOME/.kube/config.${TARGET_ENVIRONMENT}"
+else
+  echo "$HOME/.kube/config.${TARGET_ENVIRONMENT} does not exist!"
+  exit 1
+fi
 
 # Notify the user of the kubectl context we are about to deploy to
-echo "Bootstrapping to kubectl context: $(kubectl config current-context)"
-echo "Hit RETURN to continue, or Ctrl-C to abort..."
+echo '!!!!!!WARNING!!!!!!'
+echo "You are about to bootstrap into the kubectl context: $(kubectl config current-context)"
+echo "Using the kubectl configuration file: $HOME/.kube/config.${TARGET_ENVIRONMENT}"
+echo
+echo "Are you sure you want to do this?"
+echo "Hit RETURN to continue, or Ctrl-C to abort"
+echo '!!!!!!WARNING!!!!!!'
 read LINE
 
 # get the absolute path to ourself
 echo "... getting base path"
-BASEPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+readonly BASEPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 # Instructions from https://github.com/fluxcd/helm-operator/blob/master/chart/helm-operator/README.md
-if [[ $(helm repo list | awk '{print $2}' | egrep 'https://charts.fluxcd.io') ]]; then
+if [[ "$(helm repo list | awk '{print $2}' | egrep 'https://charts.fluxcd.io')" ]]; then
   echo "... fluxcd helm repo already exists. Skipping."
 else
   echo "... adding fluxcd help repo"
   helm repo add fluxcd https://charts.fluxcd.io
 fi
+
+# Install the HelmRelease CRD:
+# This is a copy of https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
+echo "... creating custom resource definitions"
+kubectl apply -f "${BASEPATH}/crds.yaml"
 
 # Create the flux namespace
 if [[ $(kubectl get namespaces fluxcd) ]]; then
@@ -28,20 +52,32 @@ else
   kubectl create namespace fluxcd
 fi
 
+# Create flux-git-deploy secret:
+echo "... decrypting secrets"
+sops -d "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key" > "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec"
+
+echo "... creating secrets in namespace"
+if kubectl --namespace fluxcd get secret flux-git-deploy 2>/dev/null; then
+  kubectl --namespace fluxcd create secret generic flux-git-deploy \
+    --from-file=identity="${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec" \
+    -o yaml \
+    --dry-run=client | \
+      kubectl --namespace fluxcd replace -f -
+else
+  kubectl --namespace fluxcd create secret generic flux-git-deploy \
+    --from-file=identity="${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec"
+fi
+
+echo "... cleaning up decrypted secrets"
+rm -f "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec"
+
 echo "... installing flux"
 helm upgrade --install flux fluxcd/flux --wait \
   --values "${BASEPATH}/values-flux.yaml" \
   --namespace fluxcd
 
-# Install the HelmRelease CRD:
-# This is a copy of https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
-echo "... creating custom resource definitions"
-kubectl apply -f "${BASEPATH}/crds.yaml"
-
 echo "... installing helm-operator"
 helm upgrade --install helm-operator fluxcd/helm-operator --wait \
   --values "${BASEPATH}/values-helm-operator.yaml" \
   --namespace fluxcd
-
-# get your ssh deploy key
-# fluxctl identity --k8s-fwd-ns fluxcd
+  

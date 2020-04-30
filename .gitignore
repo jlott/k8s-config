@@ -1,14 +1,18 @@
-# Binaries for programs and plugins
-*.exe
-*.dll
-*.so
-*.dylib
+.DS_Store
+bootstrap/flux.dev-*.key
 
-# Test binary, build with `go test -c`
-*.test
+# YAML files decrypted by the Helm secrets plugin
+*.yaml.dec
 
-# Output of the go coverage tool, specifically when used with LiteIDE
-*.out
+# Developers' local secrets files
+secrets.local.yaml 
+secret.local.yaml
+# Developers' dev secrets files
+secrets.dev-*.yaml
+!charts/*/templates/secret.local.yaml
 
-# Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
-.glide/
+# AWS developer environment secrets files
+secrets.dev-*.yaml
+
+# Cached dependent charts
+charts/**/charts/*.tgz
