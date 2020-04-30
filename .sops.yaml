@@ -1,0 +1,17 @@
+creation_rules:
+  - path_regex: \.dev(-.*)?\.yaml$
+    kms: 'arn:aws:kms:us-east-1:266056232759:key/a3293ec3-de89-4f39-b17f-21bb7891e3b3,arn:aws:kms:us-east-2:266056232759:key/7a1f3a20-dd69-47b2-b7c6-4a0adbc11f91'
+    pgp: 'B98B0211A4C02BC83DFC19BF2B6503F25ECEB689'
+    encrypted_regex: '_enc$'
+  - path_regex: \.stg\.yaml$
+    kms: 'arn:aws:kms:us-east-1:266056232759:key/8cf37e19-b601-496d-8d33-d256a7fd1b0a,arn:aws:kms:us-east-2:266056232759:key/de175e57-3e69-48d8-8caa-6d0d80351a3d'
+    pgp: 'B98B0211A4C02BC83DFC19BF2B6503F25ECEB689'
+    encrypted_regex: '_enc$'
+  - path_regex: \.prd\.yaml$
+    kms: 'arn:aws:kms:us-east-1:266056232759:key/b9858a59-3446-4813-9023-3f04e3a2612e,arn:aws:kms:us-east-2:266056232759:key/3b57f3fd-1617-4493-a9ec-41ec70ba2598'
+    pgp: 'B98B0211A4C02BC83DFC19BF2B6503F25ECEB689'
+    encrypted_regex: '_enc$'
+  - path_regex: \.test\.yaml$
+    kms: 'arn:aws:kms:us-east-1:266056232759:key/a3293ec3-de89-4f39-b17f-21bb7891e3b3,arn:aws:kms:us-east-2:266056232759:key/7a1f3a20-dd69-47b2-b7c6-4a0adbc11f91'
+    pgp: 'B98B0211A4C02BC83DFC19BF2B6503F25ECEB689'
+    encrypted_regex: '_enc$'
