@@ -7,4 +7,4 @@ metadata:
 spec:
   values:
     image:
-      tag: 6a96470-dirty
+      tag: 6a96470
