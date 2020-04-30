@@ -18,13 +18,15 @@ else
 fi
 
 # Notify the user of the kubectl context we are about to deploy to
-echo '!!!!!!WARNING!!!!!!'
-echo "You are about to bootstrap into the kubectl context: $(kubectl config current-context)"
+echo '!!!!!!WARNING!!!!!! !!!!!!WARNING!!!!!! !!!!!!WARNING!!!!!! !!!!!!WARNING!!!!!!'
+echo '-------------------------------------------------------------------------------'
+echo "You are about to bootstrap into the kubernetes context: $(kubectl config current-context)"
 echo "Using the kubectl configuration file: $HOME/.kube/config.${TARGET_ENVIRONMENT}"
 echo
 echo "Are you sure you want to do this?"
 echo "Hit RETURN to continue, or Ctrl-C to abort"
-echo '!!!!!!WARNING!!!!!!'
+echo '-------------------------------------------------------------------------------'
+echo '!!!!!!WARNING!!!!!! !!!!!!WARNING!!!!!! !!!!!!WARNING!!!!!! !!!!!!WARNING!!!!!!'
 read LINE
 
 # get the absolute path to ourself
@@ -39,11 +41,6 @@ else
   helm repo add fluxcd https://charts.fluxcd.io
 fi
 
-# Install the HelmRelease CRD:
-# This is a copy of https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
-echo "... creating custom resource definitions"
-kubectl apply -f "${BASEPATH}/crds.yaml"
-
 # Create the flux namespace
 if [[ $(kubectl get namespaces fluxcd) ]]; then
   echo "... fluxcd namespace already exists. Skipping."
@@ -52,11 +49,20 @@ else
   kubectl create namespace fluxcd
 fi
 
+# Install the HelmRelease CRD:
+# This is a copy of https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
+echo "... creating custom resource definitions"
+kubectl apply -f "${BASEPATH}/crds.yaml"
+
 # Create flux-git-deploy secret:
 echo "... decrypting secrets"
-sops -d "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key" > "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec"
+sops \
+  --config "${BASEPATH}/.sops.yaml" \
+  --decrypt "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key" \
+  | base64 \
+  > "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec"
 
-echo "... creating secrets in namespace"
+echo "... creating flux-git-deploy secret"
 if kubectl --namespace fluxcd get secret flux-git-deploy 2>/dev/null; then
   kubectl --namespace fluxcd create secret generic flux-git-deploy \
     --from-file=identity="${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec" \
@@ -70,6 +76,11 @@ fi
 
 echo "... cleaning up decrypted secrets"
 rm -f "${BASEPATH}/flux.${TARGET_ENVIRONMENT}.key.dec"
+
+echo "... labeling and annotating flux-git-deploy secret"
+kubectl --namespace fluxcd label secrets flux-git-deploy app.kubernetes.io/managed-by="Helm"
+kubectl --namespace fluxcd annotate secrets flux-git-deploy meta.helm.sh/release-name="flux"
+kubectl --namespace fluxcd annotate secrets flux-git-deploy meta.helm.sh/release-namespace="fluxcd"
 
 echo "... installing flux"
 helm upgrade --install flux fluxcd/flux --wait \

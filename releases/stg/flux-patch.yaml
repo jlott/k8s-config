@@ -2,11 +2,9 @@
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
-  annotations:
-    filter.fluxcd.io/chart-image: glob:stg-*
-  name: podinfo
-  namespace: podinfo
+  name: hello
+  namespace: hello
 spec:
   values:
     image:
-      tag: dev-vn8gelui
+      tag: f4c1fd2

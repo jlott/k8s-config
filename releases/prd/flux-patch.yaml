@@ -4,10 +4,10 @@ kind: HelmRelease
 metadata:
   annotations:
     filter.fluxcd.io/chart-image: 'semver: *'
-  name: podinfo
-  namespace: podinfo
+  name: hello
+  namespace: hello
 spec:
   values:
     image:
-      tag: 0.0.2
+      tag: 0.0.1
     replicaCount: 2
